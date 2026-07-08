@@ -17,19 +17,14 @@ metadata:
 
 从投放需求或模板创建 Meta 广告实体（Campaign → AdSet → Ad）。Agent 以**辅助预览与检查**为主，完整发布流程在 Web UI。
 
-## Phase 1
-
-- MCP `fb_auth_status` 确认 OAuth
-- 结合 **campaign** skill 获取需求 ID
-- 引导用户在 Web「一键发布」完成素材选择与发布
-
-## Phase 2 MCP Tools（规划）
+## MCP Tools
 
 | Tool | 用途 |
 |------|------|
-| `preview_publish_config` | 从 campaign_id 预览 publish config |
-| `list_publish_templates` | 发布模板列表 |
-| `run_publish` | 执行发布（须 confirm） |
+| `fb_auth_status` | 确认 Meta OAuth 已连接 |
+| `preview_publish_config` | 从 `campaign_id` 预览 publish config |
+
+完整发布（素材选择、账户绑定）仍在 Web「一键发布」完成。
 
 ## 发布前检查清单
 

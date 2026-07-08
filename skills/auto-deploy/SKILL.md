@@ -18,12 +18,14 @@ metadata:
 
 一键放量（Auto Deploy）按模板批量创建 Campaign / AdSet / Ad。Agent **Phase 1 仅查询**；创建/取消须用户确认 + compliance 通过。
 
-## MCP Tools（Phase 1）
+## MCP Tools（Phase 1 查询 + Phase 2 写）
 
 | Tool | 用途 |
 |------|------|
 | `list_auto_deploy_jobs` | 当前用户最近任务（`limit` 默认 20） |
 | `get_auto_deploy_job` | 任务详情（含子 task 状态） |
+| `create_auto_deploy_job` | 创建任务（先 `validate_only=true` dry-run） |
+| `cancel_auto_deploy_job` | 取消运行中任务 |
 
 ## 查询汇报格式
 
@@ -33,14 +35,14 @@ metadata:
 
 失败 task 须列出 `error` 摘要，建议用户去 Web UI「一键放量」查看详情。
 
-## 写操作（Phase 2，须确认）
+## 写操作（须确认）
 
 创建任务前：
 
 1. 加载 **compliance** skill
 2. 展示：账户、模板、素材数、预算、地区
-3. 等用户「确认执行」
-4. 调用 MCP `create_auto_deploy_job`（上线后）
+3. 先调用 `create_auto_deploy_job` + `validate_only=true` dry-run
+4. 等用户「确认执行」后，`validate_only=false` 正式提交
 
 取消任务：同样须确认后调用 `cancel_auto_deploy_job`。
 

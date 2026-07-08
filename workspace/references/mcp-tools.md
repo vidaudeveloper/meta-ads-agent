@@ -21,13 +21,13 @@ X-Vidau-Token: <VIDAU_SSO_TOKEN>
 | `list_auto_deploy_jobs` | 放量任务列表 | `limit?` 默认 20 |
 | `get_auto_deploy_job` | 放量任务详情 | `job_id` |
 
-## Phase 2（规划）
+## Phase 2（已上线）
 
 | Tool | 说明 |
 |------|------|
-| `preview_publish_config` | 发布配置预览 |
-| `create_auto_deploy_job` | 创建放量（须 confirm） |
-| `cancel_auto_deploy_job` | 取消任务 |
+| `preview_publish_config` | 发布配置预览（`campaign_id`） |
+| `create_auto_deploy_job` | 创建放量（须 confirm；先 `validate_only=true`） |
+| `cancel_auto_deploy_job` | 取消任务（须 confirm） |
 
 ## Phase 3（规划）
 

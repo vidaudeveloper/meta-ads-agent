@@ -25,7 +25,9 @@ npm run skills:validate
 npm run mcp:health
 ```
 
-## MCP tools reference (Phase 1)
+## MCP tools reference
+
+### Phase 1 (read-only)
 
 | Tool | Description | Auth required |
 |------|-------------|---------------|
@@ -37,7 +39,15 @@ npm run mcp:health
 | `list_auto_deploy_jobs` | List auto-deploy jobs | Yes |
 | `get_auto_deploy_job` | Auto-deploy job detail | Yes |
 
-Phase 2 (planned): `preview_publish_config`, `create_auto_deploy_job`, `generate_edit_plan`
+### Phase 2 (write — confirm + compliance)
+
+| Tool | Description |
+|------|-------------|
+| `preview_publish_config` | Preview publish params from campaign_id |
+| `create_auto_deploy_job` | Create auto-deploy job (`validate_only` dry-run first) |
+| `cancel_auto_deploy_job` | Cancel running job (user confirmation required) |
+
+Phase 3 (planned): `list_tracking_campaigns`, `generate_edit_plan`
 
 ## Skill layers
 

@@ -8,7 +8,7 @@ Please complete the full Meta Ads Agent setup in the following order:
    - `Authorization: Bearer ${VIDAU_SSO_TOKEN}`
    - `X-Vidau-Token: ${VIDAU_SSO_TOKEN}`
 
-   VidAU desktop should inject `VIDAU_SSO_TOKEN` automatically after SSO login. Reload MCP and verify the connection is healthy (`tools/list` returns 7 tools).
+   VidAU desktop should inject `VIDAU_SSO_TOKEN` automatically after SSO login. Reload MCP and verify the connection is healthy (`tools/list` returns 10 tools).
 
 2. **Skills**: Install **all** Skills from `https://github.com/vidaudeveloper/meta-ads-agent` (branch `main`). **Do not** use `raw.githubusercontent.com` URLs — they often return HTTP 429. The skill list is defined in `_manifest.yaml` — never hardcode skill names.
 
