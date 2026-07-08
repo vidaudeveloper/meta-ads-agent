@@ -1,0 +1,34 @@
+name: meta-ads-agent
+version: 1.0.0
+description: "Meta 广告投放 Agent — 投放需求→合规审核→Meta 发布→一键放量→追踪监控。通过远程 MCP 连接 meta-ads-agent.vidau.ai 后端。"
+hermes_requires: ">=0.12.0"
+author: "vidau"
+license: "MIT"
+
+env_requires:
+  - name: TOKENWARE_API_KEY
+    description: "tokenware AI API Key（模型推理）"
+    required: true
+  - name: OPENAI_API_KEY
+    description: "OpenAI 兼容 API Key（与 TOKENWARE_API_KEY 相同）"
+    required: false
+    default: "${TOKENWARE_API_KEY}"
+  - name: ADS_AGENT_MCP_URL
+    description: "远程 MCP 地址（Streamable HTTP）"
+    required: true
+    default: "https://meta-ads-agent.vidau.ai/mcp"
+  - name: ADS_AGENT_API_URL
+    description: "Meta Ads Agent API 公网地址（health 检查）"
+    required: false
+    default: "https://meta-ads-agent.vidau.ai"
+  - name: VIDAU_SSO_TOKEN
+    description: "VidAU SSO Token（桌面端自动注入，用户无需手填）"
+    required: false
+
+distribution_owned:
+  - SOUL.md
+  - config.yaml
+  - package.json
+  - scripts/
+  - skills/
+  - workspace/references/

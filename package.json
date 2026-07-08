@@ -1,0 +1,10 @@
+{
+  "name": "meta-ads-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Meta 广告投放 VidAU profile — MCP 健康检查与辅助脚本",
+  "type": "module",
+  "scripts": {
+    "mcp:health": "node scripts/mcp-health.mjs"
+  }
+}

@@ -1,0 +1,130 @@
+# =============================================================================
+# meta-ads-agent profile — Meta 广告投放 Agent 配置
+# =============================================================================
+# 安装后请复制 .env.EXAMPLE 为 .env 并填写 TOKENWARE_API_KEY
+#
+# 【Agent 禁止修改】以下字段仅允许用户手工改，Agent 不得写入/切换：
+# model.provider / model.default / model.base_url / model.api_key
+# providers / fallback_providers / mcp_servers
+# =============================================================================
+
+model:
+  provider: custom
+  default: "DeepSeek：DeepSeek V4 Flash"
+  base_url: https://www.tokenware.ai/v1
+  api_key: "${TOKENWARE_API_KEY}"
+
+custom_providers:
+  - name: tokenware
+    base_url: https://www.tokenware.ai/v1
+    api_key: "${TOKENWARE_API_KEY}"
+    model: "DeepSeek：DeepSeek V4 Flash"
+
+providers: {}
+fallback_providers: []
+credential_pool_strategies: {}
+
+toolsets:
+  - hermes-cli
+
+mcp_servers:
+  - name: ads-agent
+    transport: streamable-http
+    url: "${ADS_AGENT_MCP_URL}"
+    headers:
+      Authorization: "Bearer ${VIDAU_SSO_TOKEN}"
+      X-Vidau-Token: "${VIDAU_SSO_TOKEN}"
+
+mcp_discovery_timeout: 3.0
+
+max_concurrent_sessions: null
+max_live_sessions: 16
+
+agent:
+  max_turns: 90
+  gateway_timeout: 1800
+  restart_drain_timeout: 180
+  api_max_retries: 3
+  service_tier: ''
+  tool_use_enforcement: auto
+  task_completion_guidance: true
+  parallel_tool_call_guidance: true
+  environment_probe: true
+  environment_hint: |
+    【MCP 优先】查投放需求、放量任务、Meta OAuth 状态 → 使用 ads-agent MCP tools，禁止臆造 API 路径。
+    【合规门禁】publish / auto-deploy 前必须走 compliance skill；存在 error 则阻断。
+    【配置保护】禁止修改 config.yaml 的 model/provider/base_url/default/api_key 段；
+    禁止 switch_model；API 403 时停止并提示用户查 .env / tokenware 配额。
+    【高风险操作】创建放量任务、激活广告、修改预算前须用户明确确认（见 SOUL.md Step 4.9）。
+    【tokenware 模型 ID】default 必须是 "DeepSeek：DeepSeek V4 Flash"（全角冒号）。
+  coding_context: auto
+  verify_on_stop: true
+  gateway_timeout_warning: 900
+  clarify_timeout: 600
+  gateway_notify_interval: 180
+  gateway_auto_continue_freshness: 3600
+  image_input_mode: auto
+  disabled_toolsets: []
+
+terminal:
+  backend: local
+  modal_mode: auto
+  cwd: .
+  timeout: 180
+  daemon_term_grace_seconds: 2.0
+  env_passthrough: []
+  home_mode: auto
+  shell_init_files: []
+  auto_source_bashrc: true
+  docker_image: nikolaik/python-nodejs:python3.11-nodejs20
+  docker_forward_env: []
+  docker_env: {}
+  container_cpu: 1
+  container_memory: 5120
+  container_disk: 51200
+  container_persistent: true
+  docker_volumes: []
+  docker_run_as_host_user: false
+  persistent_shell: true
+
+web:
+  backend: ''
+  search_backend: ''
+  extract_backend: ''
+
+browser:
+  inactivity_timeout: 120
+  command_timeout: 30
+  record_sessions: false
+  allow_private_urls: false
+  engine: auto
+  auto_local_for_private_urls: true
+  cdp_url: ''
+  dialog_policy: must_respond
+  dialog_timeout_s: 300
+
+checkpoints:
+  enabled: false
+  max_snapshots: 20
+  max_total_size_mb: 500
+  max_file_size_mb: 10
+  auto_prune: true
+  retention_days: 7
+  delete_orphans: true
+  min_interval_hours: 24
+
+context_file_max_chars: null
+file_read_max_chars: 100000
+
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
