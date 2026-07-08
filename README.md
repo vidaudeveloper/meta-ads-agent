@@ -6,17 +6,22 @@ VidAU 桌面端 Meta 广告投放 Agent。通过远程 MCP 连接 [meta-ads-agen
 
 **仓库**：[github.com/vidaudeveloper/meta-ads-agent](https://github.com/vidaudeveloper/meta-ads-agent)  
 **作者**：VidAU  
-**参考**：[social-agent](https://github.com/vidaudeveloper/social-agent) Profile 结构
+**参考**：[social-agent](https://github.com/vidaudeveloper/social-agent) · [creative-agent SETUP](https://github.com/vidaudeveloper/creative-agent/blob/main/docs/SETUP.md)
 
 ## 安装
 
-### 通过 VidAU（推荐）
+### 一键 Setup（推荐）
+
+复制 [docs/SETUP.md](./docs/SETUP.md) 到 VidAU Agent 对话，自动完成 MCP + Skills 配置，然后 `/reset`。
+
+### 通过 VidAU Profile
 
 1. 在 VidAU 中安装本 profile（来源：`github.com/vidaudeveloper/meta-ads-agent`）
 2. 复制 `.env.EXAMPLE` 为 `.env`，填写 `TOKENWARE_API_KEY`
 3. 测试环境：将 `ADS_AGENT_MCP_URL` 改为 `https://meta-ads-agent.vidau.info/mcp`
-4. 运行连通性检查：`npm run mcp:health`
-5. 在 VidAU 中选择 **meta-ads-agent** profile 开始对话
+4. 安装 Skills 到 Hermes：`npm run skills:install`
+5. 运行连通性检查：`npm run mcp:health`
+6. 在 VidAU 中选择 **meta-ads-agent** profile 开始对话
 
 `VIDAU_SSO_TOKEN` 由 VidAU 桌面端自动注入，通常无需手填。
 
@@ -47,16 +52,7 @@ Meta 账户连上了吗？
 
 ## MCP 工具（Phase 1）
 
-| Tool | 说明 |
-|------|------|
-| `health` | 后端健康检查 |
-| `fb_auth_status` | Meta OAuth 连接状态 |
-| `list_campaigns` | 投放需求列表 |
-| `parse_campaign_text` | 运营文本 → 结构化字段 |
-| `list_auto_deploy_jobs` | 一键放量任务列表 |
-| `get_auto_deploy_job` | 放量任务详情 |
-
-MCP 服务部署在 `meta-ads-agent.vidau.ai/mcp`（源码在内部 `agent-demo` 仓库 `mcp/ads-agent/`）。
+详见 [SKILLS.md](./SKILLS.md)。
 
 ## 平台能力
 
@@ -74,6 +70,9 @@ MCP 服务部署在 `meta-ads-agent.vidau.ai/mcp`（源码在内部 `agent-demo`
 
 ```
 meta-ads-agent/
+├── _manifest.yaml
+├── SKILLS.md
+├── docs/SETUP.md
 ├── distribution.yaml
 ├── config.yaml
 ├── SOUL.md

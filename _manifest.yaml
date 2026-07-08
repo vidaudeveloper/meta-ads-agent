@@ -1,0 +1,96 @@
+version: "1.0.0"
+package: vidau-meta-ads
+description: VidAU Meta Ads Agent Skill package
+mcp_version: "1.0.0"
+
+mcp:
+  server_name: ads-agent
+  url_prod: https://meta-ads-agent.vidau.ai/mcp
+  url_staging: https://meta-ads-agent.vidau.info/mcp
+  auth_header: Authorization
+  sso_env: VIDAU_SSO_TOKEN
+
+mcp_tools:
+  - health
+  - list_agent_tools
+  - list_campaigns
+  - parse_campaign_text
+  - list_auto_deploy_jobs
+  - get_auto_deploy_job
+  - fb_auth_status
+
+layers:
+  L0-foundation:
+    description: Shared foundation — orchestration, compliance, campaign parsing
+  L1-capability:
+    description: Meta ads workflows — publish, auto-deploy, editing, tracking
+
+skills:
+  - id: orchestrator
+    layer: L0-foundation
+    path: skills/orchestrator
+    title: Meta Ads Orchestrator
+    tags: [meta-ads, orchestrator, pipeline]
+    requires: []
+    mcp_tools:
+      - health
+      - fb_auth_status
+      - list_campaigns
+      - parse_campaign_text
+      - list_auto_deploy_jobs
+      - get_auto_deploy_job
+
+  - id: compliance
+    layer: L0-foundation
+    path: skills/compliance
+    title: Compliance Gate
+    tags: [meta-ads, compliance, legal]
+    requires: []
+    mcp_tools:
+      - fb_auth_status
+
+  - id: campaign
+    layer: L0-foundation
+    path: skills/campaign
+    title: Campaign Requests
+    tags: [meta-ads, campaign]
+    requires: [compliance]
+    mcp_tools:
+      - parse_campaign_text
+      - list_campaigns
+
+  - id: auto-deploy
+    layer: L1-capability
+    path: skills/auto-deploy
+    title: Auto Deploy
+    tags: [meta-ads, auto-deploy]
+    requires: [compliance, campaign]
+    mcp_tools:
+      - list_auto_deploy_jobs
+      - get_auto_deploy_job
+      - fb_auth_status
+
+  - id: publish
+    layer: L1-capability
+    path: skills/publish
+    title: Meta Publish
+    tags: [meta-ads, publish]
+    requires: [compliance, campaign]
+    mcp_tools:
+      - fb_auth_status
+
+  - id: material-editing
+    layer: L1-capability
+    path: skills/material-editing
+    title: Material Editing
+    tags: [meta-ads, editing, video]
+    requires: []
+    mcp_tools: []
+
+  - id: tracking
+    layer: L1-capability
+    path: skills/tracking
+    title: Ad Tracking
+    tags: [meta-ads, tracking, insights]
+    requires: []
+    mcp_tools: []

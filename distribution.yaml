@@ -29,6 +29,9 @@ distribution_owned:
   - SOUL.md
   - config.yaml
   - package.json
+  - _manifest.yaml
+  - SKILLS.md
+  - docs/
   - scripts/
   - skills/
   - workspace/references/

@@ -2,9 +2,14 @@
   "name": "meta-ads-agent",
   "version": "1.0.0",
   "private": true,
-  "description": "Meta 广告投放 VidAU profile — MCP 健康检查与辅助脚本",
+  "description": "Meta 广告投放 VidAU profile — MCP 健康检查与 Skill 安装",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "mcp:health": "node scripts/mcp-health.mjs"
+    "mcp:health": "node scripts/mcp-health.mjs",
+    "skills:install": "node scripts/install-skills.mjs --force",
+    "skills:validate": "node scripts/validate-skills.mjs"
   }
 }

@@ -1,0 +1,132 @@
+#!/usr/bin/env node
+/**
+ * Batch-install all Meta Ads Agent skills.
+ *
+ * Local mode (default): copy skill dirs from this repo into ~/.hermes/skills/vidau-meta-ads/.
+ * Remote mode (--remote): install via hermes skills install + GitHub identifier.
+ * From-GitHub mode (--from-github): fetch _manifest.yaml via GitHub API (no clone, no raw CDN).
+ *
+ * Usage:
+ *   npm run skills:install
+ *   node scripts/install-skills.mjs --force
+ *   node scripts/install-skills.mjs --remote --force
+ *   node scripts/install-skills.mjs --from-github --force
+ */
+import { spawnSync } from "node:child_process";
+import { cp, mkdir, readFile, rm } from "node:fs/promises";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+const repo = (process.env.SKILLS_GITHUB_REPO ?? "vidaudeveloper/meta-ads-agent").replace(/\/+$/, "");
+const category = process.env.SKILLS_INSTALL_CATEGORY ?? "vidau-meta-ads";
+const force = process.argv.includes("--force") || process.env.SKILLS_INSTALL_FORCE === "1";
+const remote = process.argv.includes("--remote") || process.env.SKILLS_INSTALL_REMOTE === "1";
+const fromGithub =
+  process.argv.includes("--from-github") || process.env.SKILLS_INSTALL_FROM_GITHUB === "1";
+const cli = process.env.SKILLS_CLI?.trim() || "hermes";
+const hermesHome = process.env.HERMES_HOME?.trim() || join(homedir(), ".hermes");
+
+async function parseManifestFromRaw(raw) {
+  const skills = [];
+  let current = null;
+
+  for (const line of raw.split("\n")) {
+    const idMatch = line.match(/^\s+-\s+id:\s+(\S+)/);
+    const pathMatch = line.match(/^\s+path:\s+(\S+)/);
+    if (idMatch) {
+      current = { id: idMatch[1] };
+      skills.push(current);
+    } else if (pathMatch && current && !current.path) {
+      current.path = pathMatch[1];
+    }
+  }
+
+  return skills.filter((s) => s.id && s.path);
+}
+
+async function parseManifest() {
+  const raw = await readFile(join(repoRoot, "_manifest.yaml"), "utf8");
+  return parseManifestFromRaw(raw);
+}
+
+async function fetchManifestFromGitHub() {
+  const branch = process.env.SKILLS_GITHUB_BRANCH ?? "main";
+  const url = `https://api.github.com/repos/${repo}/contents/_manifest.yaml?ref=${branch}`;
+  const resp = await fetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "meta-ads-agent-skill-install",
+      ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+    },
+  });
+  if (!resp.ok) {
+    throw new Error(`GitHub API returned ${resp.status} for _manifest.yaml`);
+  }
+  const data = await resp.json();
+  const raw = Buffer.from(data.content, "base64").toString("utf8");
+  return parseManifestFromRaw(raw);
+}
+
+async function installLocal(skill) {
+  const src = join(repoRoot, skill.path);
+  const dest = join(hermesHome, "skills", category, skill.id);
+  await rm(dest, { recursive: true, force: true });
+  await mkdir(dirname(dest), { recursive: true });
+  await cp(src, dest, { recursive: true });
+}
+
+function installRemote(skill) {
+  const identifier = `${repo}/${skill.path}`;
+  const args = ["skills", "install", identifier, "--yes", "--category", category];
+  if (force) args.push("--force");
+  return spawnSync(cli, args, { stdio: "inherit", encoding: "utf8" });
+}
+
+async function main() {
+  const skills = fromGithub ? await fetchManifestFromGitHub() : await parseManifest();
+  const mode = fromGithub
+    ? "GitHub API manifest + remote install"
+    : remote
+      ? "remote (GitHub API)"
+      : "local copy";
+  console.info(
+    `[skills:install] ${mode}: ${skills.length} skill(s) → ${hermesHome}/skills/${category}/\n`,
+  );
+
+  let failed = 0;
+  const useRemote = remote || fromGithub;
+  for (const skill of skills) {
+    console.info(`→ ${skill.id}`);
+    if (useRemote) {
+      const r = installRemote(skill);
+      if (r.status !== 0) {
+        console.error(`✗ ${skill.id} failed (exit ${r.status})`);
+        failed += 1;
+      } else {
+        console.info(`✓ ${skill.id}\n`);
+      }
+    } else {
+      try {
+        await installLocal(skill);
+        console.info(`✓ ${skill.id}\n`);
+      } catch (err) {
+        console.error(`✗ ${skill.id}: ${err.message}`);
+        failed += 1;
+      }
+    }
+  }
+
+  if (failed) {
+    console.error(`[skills:install] done with ${failed} failure(s)`);
+    process.exit(1);
+  }
+  console.info("[skills:install] all skills installed");
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
