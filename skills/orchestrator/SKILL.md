@@ -33,10 +33,15 @@ metadata:
 
 ## Step 1: 账户检查
 
-调用 MCP **`fb_auth_status`**。未连接 OAuth 时：
+调用 MCP **`fb_auth_status`**。按返回分流：
 
-1. 告知用户需在 Web 端（meta-ads-agent.vidau.ai）完成 Meta 授权
-2. 不要尝试绕过 OAuth 或编造 token
+| 结果 | 含义 | 对用户说 |
+|------|------|----------|
+| HTTP/工具错误含 `401`、`SSO`、`未登录`、`未关联本地用户` | **身份问题** | 请在 VidAU 桌面端重新登录 SSO 后重试；**不要**先引导去绑 Meta |
+| HTTP 200 且 `authorized: false` / `needs_reauth` | **Meta OAuth 未绑定或失效** | 请打开 https://meta-ads-agent.vidau.ai（staging: `.vidau.info`）完成「连接 Ads Manager」 |
+| HTTP 200 且 `authorized: true` | 已连接 | 继续后续步骤 |
+
+不要尝试绕过 OAuth 或编造 token。
 
 ## Step 2: 投放需求
 

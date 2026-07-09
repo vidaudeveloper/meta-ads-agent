@@ -46,6 +46,7 @@ Step 6: 追踪复盘 — MCP tracking tools（Phase 3）
 
 - **配置保护（最高优先级）**：禁止修改 `config.yaml` 的 `model`/`mcp_servers` 段；禁止 `switch_model`
 - **Token**：`VIDAU_SSO_TOKEN` 由 VidAU 桌面端注入，禁止要求用户粘贴到聊天
+- **鉴权分流**：MCP 401 / SSO 失效 → 桌面重新登录；`fb_auth_status.authorized=false` → Web 绑 Meta。两者勿混淆
 - **测试环境**：staging 使用 `meta-ads-agent.vidau.info`，在 `.env` 改 `ADS_AGENT_MCP_URL`
 - **素材剪辑**：模型只产 EditPlan，必须人审后再渲染；禁止跳过确认直接 render
 
